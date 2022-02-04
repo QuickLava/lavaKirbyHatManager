@@ -21,6 +21,9 @@
     <ClInclude Include="lavaByteArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lavaBrawlConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lavaKirbyHatManager.cpp">

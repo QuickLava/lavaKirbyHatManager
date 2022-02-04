@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="lavaBrawlConstants.h" />
     <ClInclude Include="lavaByteArray.h" />
     <ClInclude Include="lavaKirbyHatManager.h" />
   </ItemGroup>

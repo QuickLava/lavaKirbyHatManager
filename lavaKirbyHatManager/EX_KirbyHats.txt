@@ -1,0 +1,5 @@
+# Add Hat Entries to this file in the following format:
+# {EX Char Fighter ID} : {Source Char Fighter ID}
+# For instance, the following line...
+# 	0x53 : 0x11
+# ... would give an EX Character 0x53 a Kirby hat based on Character 0x11
