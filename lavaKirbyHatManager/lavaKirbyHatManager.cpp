@@ -354,6 +354,24 @@ namespace lava
 
 				return result;
 			}
+			bool addHatToASM(std::ifstream& asmIn, std::size_t charID, std::size_t hatCharID)
+			{
+				bool result = 0;
+
+				if (asmIn.is_open())
+				{
+					std::string currentLine = "";
+					while (std::getline(asmIn, currentLine))
+					{
+						if (currentLine.find("Kirby Hat Float Fix") != std::string::npos )
+						{
+
+						}
+					}
+				}
+
+				return result;
+			}
 		}
 	}
 }

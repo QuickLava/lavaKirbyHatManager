@@ -2,4 +2,6 @@
 # {EX Char Fighter ID} : {Source Char Fighter ID}
 # For instance, the following line...
 # 	0x53 : 0x11
-# ... would give an EX Character 0x53 a Kirby hat based on Character 0x11
+# ... would give EX Character 0x53 a Kirby hat based on Character 0x11
+# Note: Lines starting with a hashtag ('#') or a forward slash ('/') are ignored.
+# 	When you add an entry, make sure it doesn't have one of those in front of it.

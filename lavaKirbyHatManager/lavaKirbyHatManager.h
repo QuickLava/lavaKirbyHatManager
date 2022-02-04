@@ -24,21 +24,21 @@ namespace lava
 
 			extern const std::string version;
 
-			inline constexpr std::size_t sectionListBeginOffset = 0x4C;
-			inline constexpr std::size_t transactorSectionIndex = 0x04;
+			constexpr std::size_t sectionListBeginOffset = 0x4C;
+			constexpr std::size_t transactorSectionIndex = 0x04;
 			extern std::size_t transactorSectionAddress;
 			extern std::size_t transactorSectionLength;
-			inline constexpr std::size_t transactorNullCommand =	0x60000000;
-			inline constexpr std::size_t transactorEntryTag =		0x48000001;
+			constexpr std::size_t transactorNullCommand =	0x60000000;
+			constexpr std::size_t transactorEntryTag =		0x48000001;
 
-			inline constexpr std::size_t importSectionOffsetHeaderOffset = 0x28;
+			constexpr std::size_t importSectionOffsetHeaderOffset = 0x28;
 			extern std::size_t importSectionAddress;
-			inline constexpr std::size_t importSectionOffsetLengthOffset = 0x14;
+			constexpr std::size_t importSectionOffsetLengthOffset = 0x14;
 
-			inline constexpr unsigned long long int mewtwoTransactorLinkEntry = 0x00D00A010002060C;
+			constexpr unsigned long long int mewtwoTransactorLinkEntry = 0x00D00A010002060C;
 			extern std::size_t mewtwoTransactorLinkEntryAddress;
 
-			inline constexpr std::size_t maxFighterID = 0x7F;
+			constexpr std::size_t maxFighterID = 0x7F;
 
 			const std::unordered_map<std::size_t, std::size_t> fighterIDToMapFuncID =
 			{
@@ -85,6 +85,7 @@ namespace lava
 
 			bool addHatToREL(lava::byteArray& moduleIn, std::size_t charID, std::size_t hatCharID);
 			bool addHatToKBX(lava::byteArray& kbxIn, std::size_t charID, std::size_t hatCharID);
+			bool addHatToASM(lava::byteArray& asmIn, std::size_t charID, std::size_t hatCharID);
 		}
 	}
 }
