@@ -17,6 +17,42 @@ namespace lava
 
 	namespace brawl
 	{
+		struct moduleFile
+		{
+
+			std::string sourceFilePath = "";
+			lava::byteArray fileBody;
+			
+			// Header Info
+			std::size_t ID = SIZE_MAX;
+			std::size_t sectionsCount = SIZE_MAX;
+			std::size_t sectionsEnd = SIZE_MAX;
+			std::size_t headerLength = SIZE_MAX;
+			std::size_t nameAddress = SIZE_MAX;
+			std::size_t nameLength = SIZE_MAX;
+			std::size_t version = SIZE_MAX;
+			std::size_t importsAddress = SIZE_MAX;
+			std::size_t importsLength = SIZE_MAX;
+			std::size_t importsCount = SIZE_MAX;
+			std::size_t commandsAddress = SIZE_MAX;
+			std::size_t commandsLength = SIZE_MAX;
+
+			std::vector<std::pair<std::size_t, std::size_t>> sectionsInfo{};
+			std::vector<std::pair<std::size_t, std::size_t>> importsInfo{};
+		private:
+			std::pair<std::size_t, std::size_t> _IterateThroughCommandsTill(std::size_t entryAddress);
+		public:
+
+			bool populate(std::string filePathIn);
+			std::pair<std::size_t, std::size_t> getSectionInfo(std::size_t sectionIndex);
+
+			std::size_t getSectionContainingAddress(std::size_t address);
+			std::pair<std::size_t, unsigned long long int> getLinkedCommand(std::size_t entryAddress);
+			std::pair<std::size_t, unsigned long long int> neoGetLinkedCommand(std::size_t entryAddress);
+			std::size_t insertLinkedCommand(std::size_t entryAddress, unsigned long long int commandIn);
+			std::size_t neoInsertLinkedCommand(std::size_t entryAddress, unsigned long long int commandIn);
+		};
+
 		namespace kirbyhat
 		{
 			extern std::ofstream kirbyHatChangelogStream;
@@ -25,15 +61,17 @@ namespace lava
 			extern const std::string version;
 
 			constexpr std::size_t sectionListBeginOffset = 0x4C;
+
 			constexpr std::size_t transactorSectionIndex = 0x04;
 			extern std::size_t transactorSectionAddress;
 			extern std::size_t transactorSectionLength;
 			constexpr std::size_t transactorNullCommand =	0x60000000;
 			constexpr std::size_t transactorEntryTag =		0x48000001;
 
-			constexpr std::size_t importSectionOffsetHeaderOffset = 0x28;
+			constexpr std::size_t commandSectionAddressHeaderOffset = 0x48;
+			constexpr std::size_t importSectionAddressHeaderOffset = 0x28;
 			extern std::size_t importSectionAddress;
-			constexpr std::size_t importSectionOffsetLengthOffset = 0x14;
+			constexpr std::size_t importSectionAddressLengthOffset = 0x14;
 
 			constexpr unsigned long long int mewtwoTransactorLinkEntry = 0x00D00A010002060C;
 			extern std::size_t mewtwoTransactorLinkEntryAddress;
@@ -80,12 +118,24 @@ namespace lava
 			};
 
 			bool setup(lava::byteArray& moduleIn);
-			void summarizeHats(std::ofstream& output, lava::byteArray& moduleIn);
-			void summarizeHats2(std::ofstream& output, lava::byteArray& moduleIn, lava::byteArray& kbxIn);
+			void summarizeHats(std::ofstream& output, lava::byteArray& moduleIn, lava::byteArray& kbxIn);
+			
+			std::size_t getSectionOffset(lava::byteArray& moduleIn, std::size_t sectionIndex);
+			std::size_t getSectionSize(lava::byteArray& moduleIn, std::size_t sectionIndex);
+
+			unsigned long long getCommandInfoForEntry(lava::byteArray& moduleIn, std::size_t entryAddress);
+			void traceForwardsThroughCommands(lava::byteArray& moduleIn);
+			void traceBackwardsThroughCommands(lava::byteArray& moduleIn, std::size_t firstCommandEntryOffset, std::size_t firstCommandOffset, std::size_t currSectionIn);
 
 			bool addHatToREL(lava::byteArray& moduleIn, std::size_t charID, std::size_t hatCharID);
 			bool addHatToKBX(lava::byteArray& kbxIn, std::size_t charID, std::size_t hatCharID);
 			bool addHatToASM(lava::byteArray& asmIn, std::size_t charID, std::size_t hatCharID);
+
+			constexpr std::size_t transactorBlockAddressLinkSection = 0x01;
+			constexpr std::size_t transactorBlockAddressLinkLocation = 0x0001FA20;
+			std::pair<std::size_t, unsigned long long int> getTransactorBlockLinkInfo(lava::brawl::moduleFile& moduleIn);
+			bool neoAddHatToREL(lava::brawl::moduleFile& moduleIn, std::size_t charID, std::size_t hatCharID);
+			void neoSummarizeHats(std::ofstream& output, lava::brawl::moduleFile& moduleIn, lava::byteArray& kbxIn);
 		}
 	}
 }

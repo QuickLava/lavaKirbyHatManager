@@ -8,6 +8,9 @@
 *.rel
 *.kbx
 
+#Ignore Folder
+lavaKirbyHatManager/Junk/
+
 # User-specific files
 *.rsuser
 *.suo
