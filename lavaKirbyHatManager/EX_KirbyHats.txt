@@ -1,7 +1,7 @@
 # Add Hat Entries to this file in the following format:
-# {EX Char Fighter ID} : {Source Char Fighter ID}
+# {EX Char Name} = {EX Char Fighter ID} : {Source Char Fighter ID}
 # For instance, the following line...
-# 	0x53 : 0x11
+# 	"Lucina" = 0x53 : 0x11
 # ... would give EX Character 0x53 a Kirby hat based on Character 0x11
+# Note: IDs not prefixed with "0x" will be read as decimal numbers.
 # Note: Lines starting with a hashtag ('#') or a forward slash ('/') are ignored.
-# 	When you add an entry, make sure it doesn't have one of those in front of it.
