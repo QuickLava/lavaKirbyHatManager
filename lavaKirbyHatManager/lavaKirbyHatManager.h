@@ -55,7 +55,15 @@ namespace lava
 			extern std::ofstream kirbyHatChangelogStream;
 			extern const std::string version;
 			extern const std::string outputDirectory;
+			extern const std::string relFilename;
+			extern const std::string kbxFilename;
+			extern const std::string inputFilename;
+			extern const std::string changelogFilename;
 			extern std::unordered_map<std::size_t, std::size_t> fighterIDToMapFuncID;
+
+			extern std::unordered_map<std::size_t, std::string> kirbyHatFIDToNameDict;
+			bool buildHatDictionaryFromKBX(lava::byteArray& kbxIn);
+			std::vector<std::size_t> addCharacterFIDsAndNamesToMap(const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd);
 
 			constexpr std::size_t maxFighterID = 0x7F;
 

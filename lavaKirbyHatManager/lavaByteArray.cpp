@@ -11,7 +11,7 @@ namespace lava
 		sourceStream.seekg(0, sourceStream.beg);
 		body.resize(sourceSize);
 		sourceStream.read(body.data(), sourceSize);
-		std::cout << "Loaded " << body.size() << " byte(s) of data.\n\n";
+		std::cout << "Loaded " << body.size() << " byte(s) of data.\n";
 	}
 	bool byteArray::populated()
 	{

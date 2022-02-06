@@ -47,7 +47,7 @@ namespace lava
 					commandCursor += 0x08;
 				}
 				unsigned short distanceToNext = 0x00;
-				std::cout << "Searching for a command linked to 0x" << lava::numToHexStringWithPadding(entryAddress, 0x08) << " in Section[" << currentSectionIndex << "],,.\n";
+				//std::cout << "Searching for a command linked to 0x" << lava::numToHexStringWithPadding(entryAddress, 0x08) << " in Section[" << currentSectionIndex << "]...\n";
 				bool finished = 0;
 				while (!finished && commandCursor < fileBody.body.size())
 				{
@@ -60,8 +60,8 @@ namespace lava
 					}
 					else
 					{
-						std::cout << "\t[0x" << lava::numToHexStringWithPadding(entryCursor, 0x08) << ", " << lava::numToHexStringWithPadding(commandCursor) << "] ";
-						std::cout << lava::numToHexStringWithPadding(commandValue1, 0x08) << " " << lava::numToHexStringWithPadding(commandValue2, 0x08) << "\n";
+						//std::cout << "\t[0x" << lava::numToHexStringWithPadding(entryCursor, 0x08) << ", " << lava::numToHexStringWithPadding(commandCursor) << "] ";
+						//std::cout << lava::numToHexStringWithPadding(commandValue1, 0x08) << " " << lava::numToHexStringWithPadding(commandValue2, 0x08) << "\n";
 						if (entryCursor >= entryAddress)
 						{
 							result = { entryCursor, commandCursor };
@@ -192,7 +192,7 @@ namespace lava
 					commandIn += newCommandDistanceFromPrev << (0x08 * 0x06);
 					fileBody.insertLLong(commandIn, linkedCommandLocation.second);
 					fileBody.setShort(distanceFromPrev - newCommandDistanceFromPrev, linkedCommandLocation.second + 0x08);
-					std::cout << "\tWROTE COMMAND!\n";
+					//std::cout << "\tWROTE COMMAND!\n";
 					result = linkedCommandLocation.second;
 				}
 			}
@@ -203,8 +203,12 @@ namespace lava
 		namespace kirbyhat
 		{
 			std::ofstream kirbyHatChangelogStream = std::ofstream();
-			const std::string version = "v0.25";
+			const std::string version = "v0.5";
 			const std::string outputDirectory = "./EX_KirbyHats_Output/";
+			const std::string relFilename = "ft_kirby.rel";
+			const std::string kbxFilename = "KirbyHat.kbx";
+			const std::string inputFilename = "EX_KirbyHats.txt";
+			const std::string changelogFilename = "EX_KirbyHats_Changelog.txt";
 			std::unordered_map<std::size_t, std::size_t> fighterIDToMapFuncID =
 			{
 				{LAVA_CHARA_FIGHTER_IDS::LCFI_MARIO, 0x0001fa3c},
@@ -244,6 +248,66 @@ namespace lava
 				{LAVA_CHARA_FIGHTER_IDS::LCFI_SONIC, 0x0002091c}
 			};
 
+			std::unordered_map<std::size_t, std::string> kirbyHatFIDToNameDict;
+			bool buildHatDictionaryFromKBX(lava::byteArray& kbxIn)
+			{
+				bool result = 0;
+
+				if (kbxIn.populated())
+				{
+					result = 1;
+					std::size_t hatActionVal = SIZE_MAX;
+					std::size_t hatSubactionVal1 = SIZE_MAX;
+					std::size_t hatSubactionVal2 = SIZE_MAX;
+					std::size_t hatSubactionVal3 = SIZE_MAX;
+					std::size_t hatSubactionVal4 = SIZE_MAX;
+					for (std::size_t fighterID = 0x00; fighterID < maxFighterID; fighterID++)
+					{
+						hatActionVal = kbxIn.getLong(0x800 + (fighterID * 0x04));
+						hatSubactionVal1 = kbxIn.getLong((fighterID * 0x10));
+						hatSubactionVal2 = kbxIn.getLong((fighterID * 0x10) + 0x04);
+						hatSubactionVal3 = kbxIn.getLong((fighterID * 0x10) + 0x08);
+						hatSubactionVal4 = kbxIn.getLong((fighterID * 0x10) + 0x0C);
+						if (hatSubactionVal1 || hatSubactionVal2 || hatSubactionVal3 || hatSubactionVal4)
+						{
+							if (hatSubactionVal3 != 0x00000330 && hatActionVal != 0xFFFFFFFF)
+							{
+								std::unordered_map<std::size_t, std::string>::const_iterator nameItr =
+									lava::brawl::LAVA_CHARA_FID_TO_NAME.find(fighterID);
+								if (nameItr != lava::brawl::LAVA_CHARA_FID_TO_NAME.end())
+								{
+									lava::brawl::kirbyhat::kirbyHatFIDToNameDict.insert(std::make_pair(fighterID, nameItr->second));
+								}
+								else
+								{
+									lava::brawl::kirbyhat::kirbyHatFIDToNameDict.insert(std::make_pair(fighterID, "UNRECOGNIZED"));
+								}
+							}
+						}
+					}
+				}
+
+				return result;
+			}
+
+
+			std::vector<std::size_t> addCharacterFIDsAndNamesToMap(const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd)
+			{
+				std::vector<std::size_t> collidingIDs{};
+				for (std::size_t i = 0; i < toAdd.size(); i++)
+				{
+					const std::pair<std::string, std::pair<std::size_t, std::size_t>>* currentHatPtr = &toAdd[i];
+					std::pair<std::size_t, std::string> newEntry = std::make_pair(currentHatPtr->second.first, currentHatPtr->first);
+					auto nameEmplaceRes = lava::brawl::kirbyhat::kirbyHatFIDToNameDict.emplace(std::make_pair(currentHatPtr->second.first, currentHatPtr->first));
+					if (!nameEmplaceRes.second)
+					{
+						std::cout << "[WARNING] Collision Occured on Fighter \"" << currentHatPtr->first << "\" (Fighter ID 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.first, 0x04) << "):\n";
+						std::cout << "\tNo hat will be added for this fighter.\n";
+						collidingIDs.push_back(i);
+					}
+				}
+				return collidingIDs;
+			}
 
 			std::pair<std::size_t, unsigned long long int> getTransactorBlockLinkInfo(lava::brawl::moduleFile& moduleIn)
 			{
@@ -439,8 +503,9 @@ namespace lava
 								if (hatSubactionVal3 != 0x00000330 && hatActionVal != 0xFFFFFFFF)
 								{
 									output << "--------[ID 0x" << lava::numToHexStringWithPadding(fighterID, 0x4) << "] Name: ";
-									std::unordered_map<std::size_t, std::string>::const_iterator nameItr = lava::brawl::fighterIDToName.find(fighterID);
-									if (nameItr != lava::brawl::fighterIDToName.end())
+									std::unordered_map<std::size_t, std::string>::const_iterator nameItr = 
+										lava::brawl::kirbyhat::kirbyHatFIDToNameDict.find(fighterID);
+									if (nameItr != lava::brawl::kirbyhat::kirbyHatFIDToNameDict.end())
 									{
 										output << nameItr->second << std::string(51 - nameItr->second.size(), '-');
 									}

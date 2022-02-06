@@ -112,8 +112,8 @@ namespace lava
 			//LCFI_DARK_SAMUS = 0x40,
 			//LCFI_WALUIGI = 0x28,
 		};
-
-		const std::unordered_map<std::size_t, std::string> fighterIDToName = {
+		// Mapping of Fighter ID to Text Name
+		const std::unordered_map<std::size_t, std::string> LAVA_CHARA_FID_TO_NAME = {
 			{ 0x0B, "BOWSER" },
 			{ 0x09, "CAPTAIN_FALCON" },
 			{ 0x1D, "CHARIZARD" },
