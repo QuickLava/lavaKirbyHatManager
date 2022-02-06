@@ -50,6 +50,52 @@ std::pair<std::size_t, std::size_t> parseIDPair(std::string pairStringIn)
 
 	return result;
 }
+
+bool validateNewHatEntry(const std::pair<std::string, std::pair<std::size_t, std::size_t>>& pairIn, std::ostream& output)
+{
+	bool result = 0;
+	std::string errorMessage = "";
+	if (pairIn.second.first != SIZE_MAX)
+	{
+		if (pairIn.second.second != SIZE_MAX)
+		{
+			if (pairIn.second.first <= lava::brawl::kirbyhat::maxFighterID)
+			{
+				if (lava::brawl::kirbyhat::kirbyHatFIDToNameDict.find(pairIn.second.second) != lava::brawl::kirbyhat::kirbyHatFIDToNameDict.end())
+				{
+					errorMessage = "";
+					result = 1;
+				}
+				else
+				{
+					errorMessage = "Specified Source ID currently has no Kirby Hat; there is nothing to build this Character's Hat from.\n";
+				}
+			}
+			else
+			{
+				errorMessage = "Specified Fighter ID is too high. Maximum valid value is 0x" + 
+					lava::numToHexStringWithPadding(lava::brawl::kirbyhat::maxFighterID, 0x04) + ".\n";
+			}
+		}
+		else
+		{
+			errorMessage = "Specified Source ID is NULL (0x" + lava::numToHexStringWithPadding(pairIn.second.second) + ").\n";
+		}
+	}
+	else
+	{
+		errorMessage = "Specified Fighter ID is NULL (0x" + lava::numToHexStringWithPadding(pairIn.second.second) + ").\n";
+	}
+	if (result == 0)
+	{
+		output << "[ERROR] \"" << pairIn.first << "\" (Fighter ID 0x" <<
+			lava::numToHexStringWithPadding(pairIn.second.first, 0x04) << ", Source ID 0x" <<
+			lava::numToHexStringWithPadding(pairIn.second.second, 0x04) << ")\n";
+		output << "\t" << errorMessage;
+	}
+	return result;
+}
+
 std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> parseInput(std::string inputFilePath, std::ostream& output)
 {
 	std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> result{};
@@ -93,36 +139,33 @@ std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> parseIn
 				}
 				manipStr = manipStr.substr(nameIDDelimLoc + 1, std::string::npos);
 				newEntry.second = parseIDPair(manipStr);
-				if (newEntry.second.first != SIZE_MAX)
+				if (validateNewHatEntry(newEntry, output))
 				{
-					if (newEntry.second.second != SIZE_MAX)
+					bool conflictFound = 0;
+					std::size_t i = 0;
+					while (!conflictFound && i < result.size())
 					{
-						bool conflictFound = 0;
-						std::size_t i = 0;
-						while (!conflictFound && i < result.size())
+						if (newEntry.second.first == result[i].second.first)
 						{
-							if (newEntry.second.first == result[i].second.first)
-							{
-								conflictFound = 1;
-							}
-							else
-							{
-								i++;
-							}
+							conflictFound = 1;
 						}
-						if (conflictFound)
+						else
 						{
-							std::pair<std::string, std::pair<std::size_t, std::size_t>>* conflictingElementPtr = &result[i];
-							output << "[WARNING] Collision Occured in EX_KirbyHats.txt on Fighter ID 0x" << lava::numToHexStringWithPadding(newEntry.second.first, 0x04) << ":\n";
-							output << "\tRemoving old entry \"" << conflictingElementPtr->first << "\", adding new entry \"" << newEntry.first << "\" (using Source Hat ID 0x" <<
-								lava::numToHexStringWithPadding(newEntry.second.second, 0x04) << ").\n";
-							result.erase(result.begin() + i);
+							i++;
 						}
-						output << "[LOADED] \"" << newEntry.first << "\" (Fighter ID 0x" << 
-							lava::numToHexStringWithPadding(newEntry.second.first, 0x04) << ", Source ID 0x" <<
-							lava::numToHexStringWithPadding(newEntry.second.second, 0x04) << "\n";
-						result.push_back(newEntry);
 					}
+					if (conflictFound)
+					{
+						std::pair<std::string, std::pair<std::size_t, std::size_t>>* conflictingElementPtr = &result[i];
+						output << "[WARNING] Collision Occured in EX_KirbyHats.txt on Fighter ID 0x" << lava::numToHexStringWithPadding(newEntry.second.first, 0x04) << ":\n";
+						output << "\tRemoving old entry \"" << conflictingElementPtr->first << "\", adding new entry \"" << newEntry.first << "\" (using Source Hat ID 0x" <<
+							lava::numToHexStringWithPadding(newEntry.second.second, 0x04) << ").\n";
+						result.erase(result.begin() + i);
+					}
+					output << "[LOADED] \"" << newEntry.first << "\" (Fighter ID 0x" <<
+						lava::numToHexStringWithPadding(newEntry.second.first, 0x04) << ", Source ID 0x" <<
+						lava::numToHexStringWithPadding(newEntry.second.second, 0x04) << ")\n";
+					result.push_back(newEntry);
 				}
 			}
 		}
@@ -142,10 +185,6 @@ int main()
 	hatsIn.open(lava::brawl::kirbyhat::inputFilename, std::ios_base::in);
 	if (hatsIn.is_open())
 	{
-		*kHCS << "\nLoading Hat Entries...\n";
-		std::cerr << "\nLoading Hat Entries...\n";
-		std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> toAdd = parseInput(lava::brawl::kirbyhat::inputFilename, *kHCS);
-
 		lava::brawl::moduleFile relIn;
 		bool doModuleEdit = relIn.populate(lava::brawl::kirbyhat::relFilename);
 		if (!doModuleEdit)
@@ -168,6 +207,10 @@ int main()
 			*kHCS << "[ERROR] No KBX file was found. Please check that an \"" << lava::brawl::kirbyhat::kbxFilename << "\" file exists in the same directory as this program and try again.\n";
 			std::cerr << "[ERROR] No KBX file was found. Please check that an \"" << lava::brawl::kirbyhat::kbxFilename << "\" file exists in the same directory as this program and try again.\n";
 		}
+
+		*kHCS << "\nLoading Hat Entries...\n";
+		std::cerr << "\nLoading Hat Entries...\n";
+		std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> toAdd = parseInput(lava::brawl::kirbyhat::inputFilename, *kHCS);
 
 		if (!toAdd.empty())
 		{
