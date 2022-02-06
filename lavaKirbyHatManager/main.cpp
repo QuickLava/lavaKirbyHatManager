@@ -221,7 +221,8 @@ int main()
 			for (std::size_t i = 0; i < toAdd.size(); i++)
 			{
 				std::pair<std::string, std::pair<std::size_t, std::size_t>>* currentHatPtr = &toAdd[i];
-				*kHCS << "\"" << currentHatPtr->first << "\" ID: 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.first, 0x04) << ", Source Character ID: 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.second, 0x04) << "\n";
+				auto sourceCharNameItr = lava::brawl::kirbyhat::kirbyHatFIDToNameDict.find(currentHatPtr->second.second);
+				*kHCS << "\"" << currentHatPtr->first << "\" ID: 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.first, 0x04) << ", Source Character ID: 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.second, 0x04) << " (" << sourceCharNameItr->second << ")\n";
 
 				if (std::find(collisionIndeces.begin(), collisionIndeces.end(), i) == collisionIndeces.end())
 				{
