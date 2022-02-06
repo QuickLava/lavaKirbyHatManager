@@ -203,7 +203,7 @@ namespace lava
 		namespace kirbyhat
 		{
 			std::ofstream kirbyHatChangelogStream = std::ofstream();
-			const std::string version = "v0.5";
+			const std::string version = "v0.52";
 			const std::string outputDirectory = "./EX_KirbyHats_Output/";
 			const std::string relFilename = "ft_kirby.rel";
 			const std::string kbxFilename = "KirbyHat.kbx";
@@ -289,7 +289,6 @@ namespace lava
 
 				return result;
 			}
-
 
 			std::vector<std::size_t> addCharacterFIDsAndNamesToMap(const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd)
 			{
