@@ -118,6 +118,9 @@ std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> parseIn
 								lava::numToHexStringWithPadding(newEntry.second.second, 0x04) << ").\n";
 							result.erase(result.begin() + i);
 						}
+						output << "[LOADED] \"" << newEntry.first << "\" (Fighter ID 0x" << 
+							lava::numToHexStringWithPadding(newEntry.second.first, 0x04) << ", Source ID 0x" <<
+							lava::numToHexStringWithPadding(newEntry.second.second, 0x04) << "\n";
 						result.push_back(newEntry);
 					}
 				}
