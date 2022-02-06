@@ -77,6 +77,7 @@ namespace lava
 			bool addHatToKBX(lava::byteArray& kbxIn, std::size_t charID, std::size_t hatCharID);
 			bool addHatToREL(lava::brawl::moduleFile& moduleIn, std::size_t charID, std::size_t hatCharID);
 			void summarizeHats(std::ofstream& output, lava::brawl::moduleFile& moduleIn, lava::byteArray& kbxIn);
+			bool addHatsToKHEXAsm(std::string asmPathIn, const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd);
 		}
 	}
 }

@@ -243,7 +243,7 @@ int main()
 						"\" (ID 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.first, 0x04) << ")\n";
 				}
 			}
-			
+
 			if (relIn.fileBody.populated())
 			{
 				relIn.fileBody.dumpToFile(lava::brawl::kirbyhat::outputDirectory + "ft_kirby_edit.rel");
@@ -252,6 +252,12 @@ int main()
 			{
 				kbxFile.dumpToFile(lava::brawl::kirbyhat::outputDirectory + "KirbyHat_edit.kbx");
 			}
+
+			if (lava::brawl::kirbyhat::addHatsToKHEXAsm("KirbyHatEX.asm", toAdd))
+			{
+				std::cout << "Successfully built \"" << lava::brawl::kirbyhat::outputDirectory << "\"KirbyHatEX_edit.asm\".\n";
+			}
+
 		}
 		else
 		{

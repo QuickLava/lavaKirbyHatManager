@@ -547,6 +547,46 @@ namespace lava
 					}
 				}
 			}
+			bool addHatsToKHEXAsm(std::string asmPathIn, const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd)
+			{
+				bool result = 0;
+
+				std::ifstream asmIn(asmPathIn, std::ios_base::in);
+				std::ofstream asmOut(lava::brawl::kirbyhat::outputDirectory + "KirbyHatEX_edit.asm", std::ios_base::out);
+				if (asmIn.is_open())
+				{
+					std::string currentLine = "";
+					bool lastLineWasHatFloatLine = 0;
+					while (std::getline(asmIn, currentLine))
+					{
+						if (!result && currentLine.find("%HatFloatFix") != std::string::npos)
+						{
+							lastLineWasHatFloatLine = 1;
+						}
+						else
+						{
+							if (lastLineWasHatFloatLine)
+							{
+								result = 1;
+								const std::pair<std::string, std::pair<std::size_t, std::size_t>>* currEntryPtr;
+								std::string sourceCharName = "";
+								for (std::size_t i = 0; i < toAdd.size(); i++)
+								{
+									currEntryPtr = &toAdd[i];
+									sourceCharName = lava::brawl::kirbyhat::kirbyHatFIDToNameDict.at(currEntryPtr->second.second);
+									asmOut << "\t%HatFloatFix(0x" << lava::numToHexStringWithPadding(currEntryPtr->second.first, 0x02) << ", 0x" <<
+										lava::numToHexStringWithPadding(currEntryPtr->second.second, 0x02) + ")";
+									asmOut << "\t#" << currEntryPtr->first << "/" << sourceCharName << "\n";
+								}
+							}
+							lastLineWasHatFloatLine = 0;
+						}
+						asmOut << currentLine << "\n";
+					}
+				}
+
+				return result;
+			}
 		}
 	}
 }
