@@ -294,8 +294,8 @@ int main()
 			}
 			if (!doKBXEdit)
 			{
-				*kHCS << "[ERROR] No KBX file was found. Please check that an \"" << lava::brawl::kirbyhat::kbxFilename << "\" file exists in the same directory as this program and try again.\n";
-				std::cerr << "[ERROR] No KBX file was found. Please check that an \"" << lava::brawl::kirbyhat::kbxFilename << "\" file exists in the same directory as this program and try again.\n";
+				*kHCS << "[ERROR] No KBX file was found. Please check that a \"" << lava::brawl::kirbyhat::kbxFilename << "\" file exists in the same directory as this program and try again.\n";
+				std::cerr << "[ERROR] No KBX file was found. Please check that a \"" << lava::brawl::kirbyhat::kbxFilename << "\" file exists in the same directory as this program and try again.\n";
 			}
 
 			*kHCS << "\nLoading Hat Entries...\n";
