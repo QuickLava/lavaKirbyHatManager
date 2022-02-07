@@ -7,6 +7,7 @@
 *.pac
 *.rel
 *.kbx
+*.asm
 
 #Ignore Folder
 lavaKirbyHatManager/Junk/

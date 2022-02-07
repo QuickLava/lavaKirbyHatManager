@@ -113,6 +113,62 @@ namespace lava
 			//LCFI_WALUIGI = 0x28,
 		};
 		// Mapping of Fighter ID to Text Name
+		// Comment out the below to use typical English names.
+#define USE_INTERNAL_NAMES
+# ifdef USE_INTERNAL_NAMES
+		const std::unordered_map<std::size_t, std::string> LAVA_CHARA_FID_TO_NAME = {
+			{ 0x09, "CAPTAIN" },
+			{ 0x20, "DEDEDE" },
+			{ 0x1B, "DIDDY" },
+			{ 0x01, "DONKEY" },
+			{ 0x13, "FALCO" },
+			{ 0x06, "FOX" },
+			{ 0x14, "GANON" },
+			{ 0x12, "GAMEWATCH" },
+			{ 0x30, "GKOOPA" },
+			{ 0x22, "IKE" },
+			{ 0x05, "KIRBY" },
+			{ 0x0B, "KOOPA" },
+			{ 0x02, "LINK" },
+			{ 0x21, "LUCARIO" },
+			{ 0x1A, "LUCAS" },
+			{ 0x08, "LUIGI" },
+			{ 0x00, "MARIO" },
+			{ 0x11, "MARTH" },
+			{ 0x16, "METAKNIGHT" },
+			{ 0x10, "NANA" },
+			{ 0x0A, "NESS" },
+			{ 0x0C, "PEACH" },
+			{ 0x07, "PIKACHU" },
+			{ 0x19, "PIKMIN" },
+			{ 0x17, "PIT" },
+			{ 0x1F, "POKEFUSHIGISOU" },
+			{ 0x1D, "POKELIZARDON" },
+			{ 0x1C, "POKETRAINER" },
+			{ 0x1E, "POKEZENIGAME" },
+			{ 0x0F, "POPO" },
+			{ 0x25, "PURIN" },
+			{ 0x23, "ROBOT" },
+			{ 0x03, "SAMUS" },
+			{ 0x0E, "SHEIK" },
+			{ 0x2E, "SNAKE" },
+			{ 0x2F, "SONIC" },
+			{ 0x0F, "SOPO" },
+			{ 0x18, "SZEROSUIT" },
+			{ 0x29, "TOONLINK" },
+			{ 0x15, "WARIO" },
+			{ 0x31, "WARIOMAN" },
+			{ 0x2C, "WOLF" },
+			{ 0x04, "YOSHI" },
+			{ 0x0D, "ZELDA" },
+			{ 0x26, "MEWTWO" },
+			{ 0x27, "ROY" },
+			{ 0x2D, "KNUCKLES" },
+			{ 0x2A, "RIDLEY" },
+			//{ 0x40, "DARK_SAMUS" },
+			//{ 0x28, "WALUIGI" },
+		};
+#else
 		const std::unordered_map<std::size_t, std::string> LAVA_CHARA_FID_TO_NAME = {
 			{ 0x0B, "BOWSER" },
 			{ 0x09, "CAPTAIN_FALCON" },
@@ -165,6 +221,7 @@ namespace lava
 			//{ 0x40, "DARK_SAMUS" },
 			//{ 0x28, "WALUIGI" },
 		};
+#endif
 	}
 }
 
