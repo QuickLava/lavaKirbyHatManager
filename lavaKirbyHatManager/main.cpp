@@ -279,8 +279,8 @@ int main()
 			bool doModuleEdit = relIn.populate(lava::brawl::kirbyhat::relFilename);
 			if (!doModuleEdit)
 			{
-				*kHCS << "[ERROR] No REL file was found. Please check that an \"" << lava::brawl::kirbyhat::relFilename << "\" file exists in the same directory as this program and try again.\n";
-				std::cerr << "[ERROR] No REL file was found. Please check that an \"" << lava::brawl::kirbyhat::relFilename << "\" file exists in the same directory as this program and try again.\n";
+				*kHCS << "[ERROR] No REL file was found. Please check that a \"" << lava::brawl::kirbyhat::relFilename << "\" file exists in the same directory as this program and try again.\n";
+				std::cerr << "[ERROR] No REL file was found. Please check that a \"" << lava::brawl::kirbyhat::relFilename << "\" file exists in the same directory as this program and try again.\n";
 			}
 
 			lava::byteArray kbxFile;
