@@ -27,6 +27,64 @@ namespace lava
 		return result;
 	}
 
+	bool fileExists(std::string filepathIn)
+	{
+		std::ifstream result(filepathIn);
+		return result.is_open();
+	}
+	bool folderExists(std::string folderpathIn)
+	{
+		bool result = 0;
+
+		if (folderpathIn.back() != '/' && folderpathIn.back() != '\\')
+		{
+			folderpathIn.push_back('/');
+		}
+		std::string testFileLoc = folderpathIn + "_test";
+		std::ofstream test(testFileLoc);
+		if (test.is_open())
+		{
+			result = 1;
+			test.close();
+			remove(testFileLoc.c_str());
+		}
+		return result;
+	}
+	bool copyFile(std::string sourceFile, std::string targetFile, bool overwriteExistingFile)
+	{
+		// Record result
+		bool result = 0;
+		if (sourceFile != targetFile)
+		{
+			// Initialize in and out streams
+			std::ifstream sourceFileStream;
+			std::ofstream targetFileStream;
+			// Open and test input stream
+			sourceFileStream.open(sourceFile, std::ios_base::in | std::ios_base::binary);
+			if (sourceFileStream.is_open())
+			{
+				if (overwriteExistingFile || !fileExists(targetFile))
+				{
+					// If successful, open and test output stream
+					targetFileStream.open(targetFile, std::ios_base::out | std::ios_base::binary);
+					if (targetFileStream.is_open())
+					{
+						// If both streams are open and valid, copy over the file's contents and record the success in result
+						targetFileStream << sourceFileStream.rdbuf();
+						result = 1;
+					}
+					targetFileStream.close();
+				}
+			}
+			sourceFileStream.close();
+		}
+		return result;
+	}
+	bool backupFile(std::string fileToBackup, std::string backupSuffix, bool overwriteExistingBackup)
+	{
+		return copyFile(fileToBackup, fileToBackup + backupSuffix, overwriteExistingBackup);
+	}
+
 	namespace brawl
 	{
 		std::pair<std::size_t, std::size_t> moduleFile::_IterateThroughCommandsTill(std::size_t entryAddress)
@@ -202,13 +260,49 @@ namespace lava
 
 		namespace kirbyhat
 		{
+			const std::string BuildFolder = ".././";
+			const std::string GCTRMExeName = "GCTRealMate.exe";
+			const std::string GCTRMExePath = BuildFolder + "GCTRealMate.exe";
+			const std::string GCTRMCommandBase = "\"" + GCTRMExePath + "\" -g -l ";
+#ifdef DOLPHIN_BUILD
+			const std::string mainGCTName = "NETPLAY";
+			const std::string boostGCTName = "NETBOOST";
+#else
+			const std::string mainGCTName = "RSBE01";
+			const std::string boostGCTName = "BOOST";
+#endif
+			const std::string mainGCTFile = BuildFolder + mainGCTName + ".GCT";
+			const std::string mainGCTTextFile = BuildFolder + mainGCTName + ".txt";
+			const std::string boostGCTFile = BuildFolder + boostGCTName + ".GCT";
+			const std::string boostGCTTextFile = BuildFolder + boostGCTName + ".txt";
+
 			std::ofstream kirbyHatChangelogStream = std::ofstream();
-			const std::string version = "v0.53";
+			const std::string version = "v0.75";
+			const std::string inputFilename = "EX_KirbyHats.txt";
 			const std::string outputDirectory = "./EX_KirbyHats_Output/";
+			const std::string relAutoplaceFilename = BuildFolder + "pf/module/ft_kirby.rel";
+			const std::string kbxAutoplaceFilename = BuildFolder + "pf/BrawlEx/KirbyHat.kbx";
+			const std::string khexASMAutoplaceFilename = BuildFolder + "Source/Extras/KirbyHatEX.asm";
+			const std::string changelogFilename = outputDirectory + "EX_KirbyHats_Changelog.txt";
+#ifdef USE_EX_PREFIX_FOR_INPUT
+			const std::string relFilename = "EX_ft_kirby.rel";
+			const std::string kbxFilename = "EX_KirbyHat.kbx";
+			const std::string khexASMFilename = "EX_KirbyHatEX.asm";
+#else
 			const std::string relFilename = "ft_kirby.rel";
 			const std::string kbxFilename = "KirbyHat.kbx";
-			const std::string inputFilename = "EX_KirbyHats.txt";
-			const std::string changelogFilename = "EX_KirbyHats_Changelog.txt";
+			const std::string khexASMFilename = "KirbyHatEX.asm";
+#endif
+#ifdef USE_EDIT_SUFFIX_FOR_OUTPUT
+			const std::string relEditFilename = lava::brawl::kirbyhat::outputDirectory + "ft_kirby_edit.rel";
+			const std::string kbxEditFilename = lava::brawl::kirbyhat::outputDirectory + "KirbyHat_edit.kbx";
+			const std::string khexASMEditFilename = lava::brawl::kirbyhat::outputDirectory + "KirbyHatEX_edit.asm";
+#else
+			const std::string relEditFilename = lava::brawl::kirbyhat::outputDirectory + "ft_kirby.rel";
+			const std::string kbxEditFilename = lava::brawl::kirbyhat::outputDirectory + "KirbyHat.kbx";
+			const std::string khexASMEditFilename = lava::brawl::kirbyhat::outputDirectory + "KirbyHatEX.asm";
+#endif
+			
 			std::unordered_map<std::size_t, std::size_t> fighterIDToMapFuncID =
 			{
 				{LAVA_CHARA_FIGHTER_IDS::LCFI_MARIO, 0x0001fa3c},
@@ -247,8 +341,7 @@ namespace lava
 				{LAVA_CHARA_FIGHTER_IDS::LCFI_SNAKE, 0x000208ac},
 				{LAVA_CHARA_FIGHTER_IDS::LCFI_SONIC, 0x0002091c}
 			};
-
-			std::unordered_map<std::size_t, std::string> kirbyHatFIDToNameDict;
+			std::unordered_map<std::size_t, std::string> kirbyHatFIDToName{};
 			bool buildHatDictionaryFromKBX(lava::byteArray& kbxIn)
 			{
 				bool result = 0;
@@ -276,11 +369,11 @@ namespace lava
 									lava::brawl::LAVA_CHARA_FID_TO_NAME.find(fighterID);
 								if (nameItr != lava::brawl::LAVA_CHARA_FID_TO_NAME.end())
 								{
-									lava::brawl::kirbyhat::kirbyHatFIDToNameDict.insert(std::make_pair(fighterID, nameItr->second));
+									lava::brawl::kirbyhat::kirbyHatFIDToName.insert(std::make_pair(fighterID, nameItr->second));
 								}
 								else
 								{
-									lava::brawl::kirbyhat::kirbyHatFIDToNameDict.insert(std::make_pair(fighterID, "UNRECOGNIZED"));
+									lava::brawl::kirbyhat::kirbyHatFIDToName.insert(std::make_pair(fighterID, "UNRECOGNIZED"));
 								}
 							}
 						}
@@ -297,7 +390,7 @@ namespace lava
 				{
 					const std::pair<std::string, std::pair<std::size_t, std::size_t>>* currentHatPtr = &toAdd[i];
 					std::pair<std::size_t, std::string> newEntry = std::make_pair(currentHatPtr->second.first, currentHatPtr->first);
-					auto nameEmplaceRes = lava::brawl::kirbyhat::kirbyHatFIDToNameDict.emplace(std::make_pair(currentHatPtr->second.first, currentHatPtr->first));
+					auto nameEmplaceRes = lava::brawl::kirbyhat::kirbyHatFIDToName.emplace(std::make_pair(currentHatPtr->second.first, currentHatPtr->first));
 					if (!nameEmplaceRes.second)
 					{
 						std::cout << "[WARNING] Collision Occured on Fighter \"" << currentHatPtr->first << "\" (Fighter ID 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.first, 0x04) << "):\n";
@@ -325,6 +418,8 @@ namespace lava
 
 				if (kbxIn.populated())
 				{
+					result = 1;
+
 					std::size_t numGotten = 0;
 					kirbyHatChangelogStream << "\t" << "Editing KBX...\n";
 
@@ -356,6 +451,7 @@ namespace lava
 
 				if (moduleIn.fileBody.populated())
 				{
+					result = 1;
 					std::unordered_map<std::size_t, std::size_t>::const_iterator itr = fighterIDToMapFuncID.find(hatCharID);
 					if (itr != fighterIDToMapFuncID.end())
 					{
@@ -438,6 +534,47 @@ namespace lava
 				}
 				return result;
 			}
+			bool addHatsToKHEXAsm(std::string asmPathIn, std::string asmEditPathIn, const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd)
+			{
+				bool result = 0;
+
+				std::ifstream asmIn(asmPathIn, std::ios_base::in);
+				std::ofstream asmOut(asmEditPathIn, std::ios_base::out);
+				if (asmIn.is_open() && asmOut.is_open())
+				{
+					std::string currentLine = "";
+					bool lastLineWasHatFloatLine = 0;
+					while (std::getline(asmIn, currentLine))
+					{
+						if (!result && currentLine.find("%HatFloatFix") != std::string::npos)
+						{
+							lastLineWasHatFloatLine = 1;
+						}
+						else
+						{
+							if (lastLineWasHatFloatLine)
+							{
+								const std::pair<std::string, std::pair<std::size_t, std::size_t>>* currEntryPtr;
+								std::string sourceCharName = "";
+								for (std::size_t i = 0; i < toAdd.size(); i++)
+								{
+									currEntryPtr = &toAdd[i];
+									sourceCharName = lava::brawl::kirbyhat::kirbyHatFIDToName.at(currEntryPtr->second.second);
+									asmOut << "\t%HatFloatFix(0x" << lava::numToHexStringWithPadding(currEntryPtr->second.first, 0x02) << ", 0x" <<
+										lava::numToHexStringWithPadding(currEntryPtr->second.second, 0x02) + ")";
+									asmOut << "\t#" << currEntryPtr->first << "/" << sourceCharName << "\n";
+								}
+								result = 1;
+							}
+							lastLineWasHatFloatLine = 0;
+						}
+						asmOut << currentLine << "\n";
+					}
+				}
+
+				return result;
+			}
+
 			void summarizeHats(std::ofstream& output, lava::brawl::moduleFile& moduleIn, lava::byteArray& kbxIn)
 			{
 				output << "Hat Summary:\n";
@@ -502,9 +639,9 @@ namespace lava
 								if (hatSubactionVal3 != 0x00000330 && hatActionVal != 0xFFFFFFFF)
 								{
 									output << "--------[ID 0x" << lava::numToHexStringWithPadding(fighterID, 0x4) << "] Name: ";
-									std::unordered_map<std::size_t, std::string>::const_iterator nameItr = 
-										lava::brawl::kirbyhat::kirbyHatFIDToNameDict.find(fighterID);
-									if (nameItr != lava::brawl::kirbyhat::kirbyHatFIDToNameDict.end())
+									std::unordered_map<std::size_t, std::string>::const_iterator nameItr =
+										lava::brawl::kirbyhat::kirbyHatFIDToName.find(fighterID);
+									if (nameItr != lava::brawl::kirbyhat::kirbyHatFIDToName.end())
 									{
 										output << nameItr->second << std::string(51 - nameItr->second.size(), '-');
 									}
@@ -546,46 +683,6 @@ namespace lava
 						}
 					}
 				}
-			}
-			bool addHatsToKHEXAsm(std::string asmPathIn, const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd)
-			{
-				bool result = 0;
-
-				std::ifstream asmIn(asmPathIn, std::ios_base::in);
-				std::ofstream asmOut(lava::brawl::kirbyhat::outputDirectory + "KirbyHatEX_edit.asm", std::ios_base::out);
-				if (asmIn.is_open())
-				{
-					std::string currentLine = "";
-					bool lastLineWasHatFloatLine = 0;
-					while (std::getline(asmIn, currentLine))
-					{
-						if (!result && currentLine.find("%HatFloatFix") != std::string::npos)
-						{
-							lastLineWasHatFloatLine = 1;
-						}
-						else
-						{
-							if (lastLineWasHatFloatLine)
-							{
-								result = 1;
-								const std::pair<std::string, std::pair<std::size_t, std::size_t>>* currEntryPtr;
-								std::string sourceCharName = "";
-								for (std::size_t i = 0; i < toAdd.size(); i++)
-								{
-									currEntryPtr = &toAdd[i];
-									sourceCharName = lava::brawl::kirbyhat::kirbyHatFIDToNameDict.at(currEntryPtr->second.second);
-									asmOut << "\t%HatFloatFix(0x" << lava::numToHexStringWithPadding(currEntryPtr->second.first, 0x02) << ", 0x" <<
-										lava::numToHexStringWithPadding(currEntryPtr->second.second, 0x02) + ")";
-									asmOut << "\t#" << currEntryPtr->first << "/" << sourceCharName << "\n";
-								}
-							}
-							lastLineWasHatFloatLine = 0;
-						}
-						asmOut << currentLine << "\n";
-					}
-				}
-
-				return result;
 			}
 		}
 	}
