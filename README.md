@@ -6,4 +6,4 @@ Importantly, that means you'll still need to manually edit your characters' "Fig
 
 ***Important Note:*** *Kirby Hat compatibility is still* ***extremely*** *spotty, most source characters simply don't work. While this may change as fixes are developed for other hats, things are (and will remain) remarkably limited for the time being.*
 
-*For preliminary compatability information, see [this chart](https://docs.google.com/spreadsheets/d/1rlw8wemQ849w-6AgGISXATPv6-pfVnTTQcQqd6N-crI/edit?usp=sharing).*
+*For preliminary compatibility information, see [this chart](https://docs.google.com/spreadsheets/d/1rlw8wemQ849w-6AgGISXATPv6-pfVnTTQcQqd6N-crI/edit?usp=sharing).*
