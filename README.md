@@ -18,6 +18,6 @@ Importantly, that means you'll still need to manually edit your characters' "Fig
 
 5. Run the appropriate version of the program for your build (use the "DOLPHIN" version for builds using "NETPLAY.GCT" and "NETBOOST.GCT").
 
-6. For each file that the program produces, it will search for that file in the appropriate location in your build. If it's found, it will offer to backup the existing file and copy over the newly edited one. Additionally, if it replaces your "KirbyHatEX.asm" file, and also detects the GCTRM, it will offer to run that as well.
+6. For each file that the program produces, it will search for that file in the appropriate location in your build. If it's found, it will offer to backup the existing file and copy over the newly edited one. Additionally, if it replaces your "KirbyHatEX.asm" file, and also detects the GCTRM executable, it will offer to run that as well.
 
 Note: If the program replaces your "KirbyHatEX.asm" but *doesn't* prompt you to run GCTRM, it's because it couldn't find "RSBE01.txt" and "BOOST.txt" (or "NETPLAY.txt" and "NETBOOST.txt", when using the "DOLPHIN" version). Make sure those exist in your "Project+" folder, then run the program again.
