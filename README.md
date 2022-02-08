@@ -5,3 +5,5 @@ Note that this program currently only performs Steps 1, 2, 3, and 5 of the linke
 Importantly, that means you'll still need to manually edit to your characters' "FighterXX.dat" files, copy and rename your source character's hat files, edit "Source/ProjectM/CloneEngine.asm" (if you're working with a Lucario or Samus hat), and compile your GCTs with GCTRM yourself. See included "readme.txt" for more specific use instructions.
 
 ***Important Note:*** *Kirby Hat compatibility is still* ***extremely*** *spotty, most source characters simply don't work. While this may change as fixes are developed for other hats, things are (and will remain) remarkably limited for the time being.*
+
+*For preliminary compatability information, see [this chart](https://docs.google.com/spreadsheets/d/1rlw8wemQ849w-6AgGISXATPv6-pfVnTTQcQqd6N-crI/edit?usp=sharing).*
