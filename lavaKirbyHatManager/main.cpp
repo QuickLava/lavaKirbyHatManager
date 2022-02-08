@@ -334,58 +334,72 @@ int main()
 				}
 
 				std::cout << "\n";
-
-				if (relIn.fileBody.populated())
-				{
-					if (!toAdd.empty())
-					{
-						std::cout << "Added Hats to REL. ";
-					}
-					relIn.fileBody.dumpToFile(lava::brawl::kirbyhat::relEditFilename);
-					if (lava::fileExists(lava::brawl::kirbyhat::relAutoplaceFilename))
-					{
-						if (offerCopyOverAndBackup(lava::brawl::kirbyhat::relEditFilename, lava::brawl::kirbyhat::relAutoplaceFilename))
-						{
-							*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::relAutoplaceFilename << "\" and overwrote it with the newly edited REL.";
-						}
-						std::cout << "\n";
-					}
-				}
-				if (kbxFile.populated())
-				{
-					if (!toAdd.empty())
-					{
-						std::cout << "Added Hats to KBX. ";
-					}
-					kbxFile.dumpToFile(lava::brawl::kirbyhat::kbxEditFilename);
-					if (lava::fileExists(lava::brawl::kirbyhat::kbxAutoplaceFilename))
-					{
-						if (offerCopyOverAndBackup(lava::brawl::kirbyhat::kbxEditFilename, lava::brawl::kirbyhat::kbxAutoplaceFilename))
-						{
-							*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::kbxAutoplaceFilename << "\" and overwrote it with the newly edited KBX.";
-						}
-						std::cout << "\n";
-					}
-				}
-				if (lava::brawl::kirbyhat::addHatsToKHEXAsm(lava::brawl::kirbyhat::khexASMFilename, lava::brawl::kirbyhat::khexASMEditFilename, toAdd))
-				{
-					std::cout << "Successfully built \"" << lava::brawl::kirbyhat::khexASMEditFilename << "\".\n";
-					if (lava::fileExists(lava::brawl::kirbyhat::khexASMAutoplaceFilename))
-					{
-						if (offerCopyOverAndBackup(lava::brawl::kirbyhat::khexASMEditFilename, lava::brawl::kirbyhat::khexASMAutoplaceFilename))
-						{
-							*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::khexASMAutoplaceFilename << "\" and overwrote it with the newly edited ASM.\n";
-							handleAutoGCTRMProcess(lava::brawl::kirbyhat::khexASMEditFilename);
-						}
-					}
-				}
 			}
 			else
 			{
-				*kHCS << "[WARNING] No validly specified hats were found. Please check that there are valid entries in \"" << lava::brawl::kirbyhat::inputFilename << "\" and try again.\n";
-				std::cerr << "[WARNING] No validly specified hats were found. Please check that there are valid entries in \"" << lava::brawl::kirbyhat::inputFilename << "\" and try again.\n";
+				*kHCS << "\n[WARNING] No validly specified hats were found. Please check that there are valid entries in \"" << lava::brawl::kirbyhat::inputFilename << "\" and try again.\n";
+				std::cerr << "\n[WARNING] No validly specified hats were found. Please check that there are valid entries in \"" << lava::brawl::kirbyhat::inputFilename << "\" and try again.\n\n";
 			}
 
+			if (relIn.fileBody.populated())
+			{
+				if (!toAdd.empty())
+				{
+					std::cout << "Added Hats to REL. ";
+				}
+				else
+				{
+					std::cout << "There were no Hats to add to REL. ";
+				}
+				relIn.fileBody.dumpToFile(lava::brawl::kirbyhat::relEditFilename);
+				if (lava::fileExists(lava::brawl::kirbyhat::relAutoplaceFilename))
+				{
+					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::relEditFilename, lava::brawl::kirbyhat::relAutoplaceFilename))
+					{
+						*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::relAutoplaceFilename << "\" and overwrote it with the newly edited REL.";
+					}
+					std::cout << "\n";
+				}
+			}
+			if (kbxFile.populated())
+			{
+				if (!toAdd.empty())
+				{
+					std::cout << "Added Hats to KBX. ";
+				}
+				else
+				{
+					std::cout << "There were no Hats to add to KBX. ";
+				}
+				kbxFile.dumpToFile(lava::brawl::kirbyhat::kbxEditFilename);
+				if (lava::fileExists(lava::brawl::kirbyhat::kbxAutoplaceFilename))
+				{
+					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::kbxEditFilename, lava::brawl::kirbyhat::kbxAutoplaceFilename))
+					{
+						*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::kbxAutoplaceFilename << "\" and overwrote it with the newly edited KBX.";
+					}
+					std::cout << "\n";
+				}
+			}
+			if (lava::brawl::kirbyhat::addHatsToKHEXAsm(lava::brawl::kirbyhat::khexASMFilename, lava::brawl::kirbyhat::khexASMEditFilename, toAdd))
+			{
+				if (!toAdd.empty())
+				{
+					std::cout << "Successfully added Hats to \"" << lava::brawl::kirbyhat::khexASMEditFilename << "\".\n";
+				}
+				else
+				{
+					std::cout << "No hats were added to \"" << lava::brawl::kirbyhat::khexASMEditFilename << "\".\n";
+				}
+				if (lava::fileExists(lava::brawl::kirbyhat::khexASMAutoplaceFilename))
+				{
+					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::khexASMEditFilename, lava::brawl::kirbyhat::khexASMAutoplaceFilename))
+					{
+						*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::khexASMAutoplaceFilename << "\" and overwrote it with the newly edited ASM.\n";
+						handleAutoGCTRMProcess(lava::brawl::kirbyhat::khexASMEditFilename);
+					}
+				}
+			}
 			
 			if (relIn.fileBody.populated() && kbxFile.populated())
 			{

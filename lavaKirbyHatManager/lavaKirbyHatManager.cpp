@@ -261,7 +261,6 @@ namespace lava
 		namespace kirbyhat
 		{
 			const std::string BuildFolder = ".././";
-			const std::string GCTRMExeName = "GCTRealMate.exe";
 			const std::string GCTRMExePath = BuildFolder + "GCTRealMate.exe";
 			const std::string GCTRMCommandBase = "\"" + GCTRMExePath + "\" -g -l ";
 #ifdef DOLPHIN_BUILD
