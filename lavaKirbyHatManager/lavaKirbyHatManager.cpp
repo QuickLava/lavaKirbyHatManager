@@ -257,6 +257,7 @@ namespace lava
 
 			return result;
 		}
+		
 
 		namespace kirbyhat
 		{
@@ -276,7 +277,7 @@ namespace lava
 			const std::string boostGCTTextFile = BuildFolder + boostGCTName + ".txt";
 
 			std::ofstream kirbyHatChangelogStream = std::ofstream();
-			const std::string version = "v0.75";
+			const std::string version = "v0.80";
 			const std::string inputFilename = "EX_KirbyHats.txt";
 			const std::string outputDirectory = "./EX_KirbyHats_Output/";
 			const std::string relAutoplaceFilename = BuildFolder + "pf/module/ft_kirby.rel";
@@ -362,7 +363,11 @@ namespace lava
 						hatSubactionVal4 = kbxIn.getLong((fighterID * 0x10) + 0x0C);
 						if (hatSubactionVal1 || hatSubactionVal2 || hatSubactionVal3 || hatSubactionVal4)
 						{
-							if (hatSubactionVal3 != 0x00000330 && hatActionVal != 0xFFFFFFFF)
+							// Certain character slots have entries with NULLED out hat data entries.
+							// It seems that this configuration causes Kirby not gain an ability on a copy attempt.
+							// I'm hoping that this is a functionality that can be lent to P+Ex characters to prevent crashing on copy attempts.
+							// To facilitate this without bloating the hat summary, the only entry like this I'll be cataloguing is Kirby's
+							if (fighterID == lava::brawl::LAVA_CHARA_FIGHTER_IDS::LCFI_KIRBY || (hatSubactionVal3 != 0x00000330 && hatActionVal != 0xFFFFFFFF))
 							{
 								std::unordered_map<std::size_t, std::string>::const_iterator nameItr =
 									lava::brawl::LAVA_CHARA_FID_TO_NAME.find(fighterID);
@@ -410,6 +415,74 @@ namespace lava
 				}
 				return transactorBlockCommandInfo;
 			}
+			/*std::vector<std::size_t> catalogueTransactors(lava::brawl::moduleFile& moduleIn, bool forceRefresh)
+			{
+				static std::vector<std::pair<std::size_t, std::size_t>> transactorEntries{};
+
+				if (moduleIn.fileBody.populated())
+				{
+					std::unordered_map<std::size_t, std::size_t>::const_iterator itr = fighterIDToMapFuncID.find(hatCharID);
+					if (itr != fighterIDToMapFuncID.end())
+					{
+						std::size_t mapFuncID = itr->second;
+
+						std::pair<std::size_t, unsigned long long int> transactorBlockCommandInfo = getTransactorBlockLinkInfo(moduleIn);
+
+						std::size_t transactorBlockSectionID = (transactorBlockCommandInfo.second >> (0x08 * 0x04)) & 0x000000FF;
+						std::pair<std::size_t, std::size_t> transactorBlockSectionInfo = moduleIn.getSectionInfo(transactorBlockSectionID);
+						std::size_t transactorBlockSectionAddress = transactorBlockSectionInfo.first;
+
+						std::size_t deltaOff = transactorBlockCommandInfo.second;
+
+						bool nullFound = 0;
+						bool entryFound = 0;
+						//std::vector<std::size_t> transactorEntries{};
+						while (deltaOff < transactorBlockSectionInfo.second && !nullFound)
+						{
+							std::size_t valAtDeltaOff = moduleIn.fileBody.getLong(transactorBlockSectionAddress + deltaOff);
+							switch (valAtDeltaOff)
+							{
+								case transactorNullTag:
+								{
+									nullFound = 1;
+									break;
+								}
+								case transactorEntryTag:
+								{
+									entryFound = 1;
+									std::size_t fighterID;
+									std::size_t transactor;
+									transactorEntries.push_back(moduleIn.fileBody.getLong(transactorBlockSectionAddress + deltaOff + 0x04));
+									break;
+								}
+							default:
+							{
+								if (entryFound)
+								{
+									std::cerr << "[FAILURE] Hat Transactor Not Written. The alotted hat space is full.\n";
+									std::cerr << "[FAILURE] Hat Command Not Written: The alotted hat space is full.\n";
+								}
+								else
+								{
+									std::cerr << "[FAILURE] Hat Transactor Not Written. REL is likely malformed, check it in BrawlCrate.\n";
+									std::cerr << "[FAILURE] Hat Command Not Written. REL is likely malformed, check it in BrawlCrate.\n";
+								}
+								break;
+							}
+							}
+							if (!nullFound)
+							{
+								deltaOff += 0x08;
+							}
+						}
+					}
+					else
+					{
+						kirbyHatChangelogStream << "\t\t" << "[SUCCESS] No transactor is associated with this ID (0x" <<
+							lava::numToHexStringWithPadding(hatCharID, 0x04) << "). No REL edits necessary.\n";
+					}
+				}
+			}*/
 
 			bool addHatToKBX(lava::byteArray& kbxIn, std::size_t charID, std::size_t hatCharID)
 			{
@@ -574,7 +647,7 @@ namespace lava
 				return result;
 			}
 
-			void summarizeHats(std::ofstream& output, lava::brawl::moduleFile& moduleIn, lava::byteArray& kbxIn)
+			void summarizeHats(std::ofstream& output, lava::brawl::moduleFile& moduleIn, lava::byteArray& kbxIn, std::vector<std::size_t> newIDs)
 			{
 				output << "Hat Summary:\n";
 
@@ -626,8 +699,10 @@ namespace lava
 						std::size_t hatSubactionVal3 = SIZE_MAX;
 						std::size_t hatSubactionVal4 = SIZE_MAX;
 						std::vector<std::size_t> noAbilityHats{};
+						bool newEntry = 0;
 						for (std::size_t fighterID = 0x00; fighterID < maxFighterID; fighterID++)
 						{
+							newEntry = std::find(newIDs.begin(), newIDs.end(), fighterID) != newIDs.end();
 							hatActionVal = kbxIn.getLong(0x800 + (fighterID * 0x04));
 							hatSubactionVal1 = kbxIn.getLong((fighterID * 0x10));
 							hatSubactionVal2 = kbxIn.getLong((fighterID * 0x10) + 0x04);
@@ -635,7 +710,10 @@ namespace lava
 							hatSubactionVal4 = kbxIn.getLong((fighterID * 0x10) + 0x0C);
 							if (hatSubactionVal1 || hatSubactionVal2 || hatSubactionVal3 || hatSubactionVal4)
 							{
-								if (hatSubactionVal3 != 0x00000330 && hatActionVal != 0xFFFFFFFF)
+								// We want to avoid printing any hats with nulled out entry data, EXCEPT
+								// Newly added entries (which can have nulled out entries now),
+								// and Kirby, since being able to check newly nulled entries against Kirby is now important.
+								if (newEntry || fighterID == LAVA_CHARA_FIGHTER_IDS::LCFI_KIRBY || (hatSubactionVal3 != 0x00000330 && hatActionVal != 0xFFFFFFFF))
 								{
 									output << "--------[ID 0x" << lava::numToHexStringWithPadding(fighterID, 0x4) << "] Name: ";
 									std::unordered_map<std::size_t, std::string>::const_iterator nameItr =

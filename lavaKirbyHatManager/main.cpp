@@ -300,6 +300,7 @@ int main()
 
 			*kHCS << "\nLoading Hat Entries...\n";
 			std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> toAdd = parseInput(lava::brawl::kirbyhat::inputFilename, *kHCS);
+			std::vector<std::size_t> added{};
 
 			if (!toAdd.empty())
 			{
@@ -315,6 +316,8 @@ int main()
 
 					if (std::find(collisionIndeces.begin(), collisionIndeces.end(), i) == collisionIndeces.end())
 					{
+						added.push_back(currentHatPtr->second.first);
+
 						if (doKBXEdit)
 						{
 							lava::brawl::kirbyhat::addHatToKBX(kbxFile, currentHatPtr->second.first, currentHatPtr->second.second);
@@ -404,7 +407,7 @@ int main()
 			if (relIn.fileBody.populated() && kbxFile.populated())
 			{
 				*kHCS << "\n";
-				lava::brawl::kirbyhat::summarizeHats(*kHCS, relIn, kbxFile);
+				lava::brawl::kirbyhat::summarizeHats(*kHCS, relIn, kbxFile, added);
 			}
 			*kHCS << "\n";
 			std::cout << "\nSee changelog and summary in \"" << lava::brawl::kirbyhat::changelogFilename << ".\n";

@@ -44,6 +44,7 @@ namespace lava
 
 			std::vector<std::pair<std::size_t, std::size_t>> sectionsInfo{};
 			std::vector<std::pair<std::size_t, std::size_t>> importsInfo{};
+
 		private:
 			std::pair<std::size_t, std::size_t> _IterateThroughCommandsTill(std::size_t entryAddress);
 		public:
@@ -54,6 +55,7 @@ namespace lava
 
 			std::pair<std::size_t, unsigned long long int> getLinkedCommand(std::size_t entryAddress);
 			std::size_t insertLinkedCommand(std::size_t entryAddress, unsigned long long int commandIn);
+
 		};
 
 		namespace kirbyhat
@@ -106,12 +108,13 @@ namespace lava
 			constexpr std::size_t transactorBlockAddressLinkLocation = 0x0001FA20;
 
 			std::pair<std::size_t, unsigned long long int> getTransactorBlockLinkInfo(lava::brawl::moduleFile& moduleIn);
+			//std::vector<std::size_t> catalogueTransactors(lava::brawl::moduleFile& moduleIn, bool forceRefresh = 0);
 
 			bool addHatToKBX(lava::byteArray& kbxIn, std::size_t charID, std::size_t hatCharID);
 			bool addHatToREL(lava::brawl::moduleFile& moduleIn, std::size_t charID, std::size_t hatCharID);
 			bool addHatsToKHEXAsm(std::string asmPathIn, std::string asmPathOut, const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd);
 
-			void summarizeHats(std::ofstream& output, lava::brawl::moduleFile& moduleIn, lava::byteArray& kbxIn);
+			void summarizeHats(std::ofstream& output, lava::brawl::moduleFile& moduleIn, lava::byteArray& kbxIn, std::vector<std::size_t> newIDs = {});
 		}
 	}
 }
