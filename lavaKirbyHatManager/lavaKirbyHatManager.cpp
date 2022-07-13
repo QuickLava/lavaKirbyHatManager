@@ -264,7 +264,8 @@ namespace lava
 			const std::string BuildFolder = ".././";
 			const std::string GCTRMExePath = BuildFolder + "GCTRealMate.exe";
 			const std::string GCTRMCommandBase = "\"" + GCTRMExePath + "\" -g -l ";
-#ifdef DOLPHIN_BUILD
+#define BUILD_NETPLAY_FILES
+#ifdef BUILD_NETPLAY_FILES
 			const std::string mainGCTName = "NETPLAY";
 			const std::string boostGCTName = "NETBOOST";
 #else
@@ -277,7 +278,7 @@ namespace lava
 			const std::string boostGCTTextFile = BuildFolder + boostGCTName + ".txt";
 
 			std::ofstream kirbyHatChangelogStream = std::ofstream();
-			const std::string version = "v0.80";
+			const std::string version = "v0.8.0";
 			const std::string inputFilename = "EX_KirbyHats.txt";
 			const std::string outputDirectory = "./EX_KirbyHats_Output/";
 			const std::string relAutoplaceFilename = BuildFolder + "pf/module/ft_kirby.rel";
