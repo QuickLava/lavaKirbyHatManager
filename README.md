@@ -10,7 +10,7 @@ Importantly, that means you'll still need to manually edit your characters' "Fig
 
 1. Download the most recent release (Version 0.8.0, as of writing this).
 
-2. Extract the zipped folder into your build's "Project+" folder, so that the program executable is located in "Project+/lavaKirbyHatManager - Version 0.75/".
+2. Extract the zipped folder into your build's base folder. For instance, P+EX builds would place it into the "Project+" folder, so that the program executables are located in "Project+/lavaKirbyHatManager - Version 0.8.0/".
 
 3. Copy your "KirbyHatEX.asm", "KirbyHat.kbx", and "ft_kirby.rel" files into the program's folder. Ideally, start from fresh, stock P+EX versions of these.
 
