@@ -8,7 +8,7 @@ Importantly, that means you'll still need to manually edit your characters' "Fig
 
 ## Instructions for Automatic File Placement and GCTRM
 
-1. Download the most recent release (Version 0.75, as of writing this).
+1. Download the most recent release (Version 0.8.0, as of writing this).
 
 2. Extract the zipped folder into your build's "Project+" folder, so that the program executable is located in "Project+/lavaKirbyHatManager - Version 0.75/".
 
@@ -16,7 +16,7 @@ Importantly, that means you'll still need to manually edit your characters' "Fig
 
 4. Add entries to the included "EX_KirbyHats.txt", as specified in that file.
 
-5. Run the appropriate version of the program for your build (use the "DOLPHIN" version for builds using "NETPLAY.GCT" and "NETBOOST.GCT").
+5. Run the appropriate version of the program for your build (use the "NETPLAY" version for builds using "NETPLAY.GCT" and "NETBOOST.GCT").
 
 6. For each file that the program produces, it will search for that file in the appropriate location in your build. If it's found, it will offer to backup the existing file and copy over the newly edited one. Additionally, if it replaces your "KirbyHatEX.asm" file, and also detects the GCTRM executable, it will offer to run that as well.
 
