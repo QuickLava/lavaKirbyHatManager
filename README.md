@@ -20,4 +20,28 @@ Importantly, that means you'll still need to manually edit your characters' "Fig
 
 6. For each file that the program produces, it will search for that file in the appropriate location in your build. If it's found, it will offer to backup the existing file and copy over the newly edited one. Additionally, if it replaces your "KirbyHatEX.asm" file, and also detects the GCTRM executable, it will offer to run that as well.
 
-Note: If the program replaces your "KirbyHatEX.asm" but *doesn't* prompt you to run GCTRM, it's because it couldn't find "RSBE01.txt" and "BOOST.txt" (or "NETPLAY.txt" and "NETBOOST.txt", when using the "DOLPHIN" version). Make sure those exist in your "Project+" folder, then run the program again.
+Note: If the program replaces your "KirbyHatEX.asm" but *doesn't* prompt you to run GCTRM, it's because it couldn't find "RSBE01.txt" and "BOOST.txt" (or "NETPLAY.txt" and "NETBOOST.txt", when using the "NETPLAY" version). Make sure those exist in your "Project+" folder, then run the program again.
+
+## Instructions for Hands-free Execution
+
+The program supports 5 boolean command line arguments which can be used to force the interactive choices offered by the program to automatically take on certain values. In order, these are:
+- KBXOverride
+- RELOverride
+- ASMOverride
+- GCTOverride
+- PressButtonToCloseDisable
+
+The first four can be set to either 1 or 0 to force the associated decision to process a value of "Yes" or "No" respectively, or they may be set to "-" to leave the interactive choice intact.
+
+The final argument can be set to 1 to remove the need to press a key to close the program after it finishes running.
+
+So, for instance, the following program call...
+
+> lavaKirbyHatManager.exe 1 1 0 0 1
+
+... would force the program to replace the KBX and REL files, not replace the ASM or GCT Files, and skip the "press key to exit" prompt, all without any interaction from the user. Another example would be the following call...
+
+> lavaKirbyHatManager.exe - - - 1 0
+
+... which would leave the choices for replacing the KBX, REL, and ASM files intact, but would force the GCT files to be built, and leave the "press key to exit" prompt in place.
+
