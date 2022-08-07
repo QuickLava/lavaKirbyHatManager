@@ -1,6 +1,22 @@
 #include <conio.h>
 #include "lavaKirbyHatManager.h"
 
+// Variaibles for forcing decisions to certain values, allowing the program to be used without interaction.
+int KBXCopyOverride = INT_MAX;
+int RELCopyOverride = INT_MAX;
+int ASMCopyOverride = INT_MAX;
+int GCTBuildOverride = INT_MAX;
+int CloseOnFinishBypass = INT_MAX;
+enum argumentIDs
+{
+	aI_KBX = 1,
+	aI_REL,
+	aI_ASM,
+	aI_GCT,
+	aI_CLOSE,
+	argumentCount
+};
+
 int stringToNum(const std::string& stringIn, bool allowNeg, int defaultVal)
 {
 	int result = defaultVal;
@@ -184,7 +200,7 @@ std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>> parseIn
 	return result;
 }
 
-bool offerCopyOverAndBackup(std::string fileToCopy, std::string fileToOverwrite)
+bool offerCopyOverAndBackup(std::string fileToCopy, std::string fileToOverwrite, int decisionOverride = INT_MAX)
 {
 	bool backupSucceeded = 0;
 	bool copySucceeded = 0;
@@ -193,7 +209,8 @@ bool offerCopyOverAndBackup(std::string fileToCopy, std::string fileToOverwrite)
 		"Would you like to copy \"" << fileToCopy << "\" over it? " <<
 		"A backup will be made of the existing file.\n";
 	std::cout << "[Press 'Y' for Yes, 'N' for No]\n";
-	if (yesNoDecision('y', 'n'))
+
+	if ((decisionOverride == INT_MAX && yesNoDecision('y', 'n')) || (decisionOverride != INT_MAX && decisionOverride != 0))
 	{
 		std::cout << "Making backup... ";
 		if (lava::backupFile(fileToOverwrite, ".bak", 1))
@@ -222,7 +239,7 @@ bool offerCopyOverAndBackup(std::string fileToCopy, std::string fileToOverwrite)
 	return backupSucceeded && copySucceeded;
 }
 
-bool handleAutoGCTRMProcess(std::string khexASMOutputLocation)
+bool handleAutoGCTRMProcess(std::string khexASMOutputLocation, int decisionOverride = INT_MAX)
 {
 	bool result = 0;
 
@@ -233,7 +250,7 @@ bool handleAutoGCTRMProcess(std::string khexASMOutputLocation)
 			lava::brawl::kirbyhat::mainGCTFile << "\" and \"" << lava::brawl::kirbyhat::boostGCTFile << "\"?" <<
 			" Backups will be made of the existing files.\n";
 		std::cout << "[Press 'Y' for Yes, 'N' for No]\n";
-		if (yesNoDecision('y', 'n'))
+		if ((decisionOverride == INT_MAX && yesNoDecision('y', 'n')) || (decisionOverride != INT_MAX && decisionOverride != 0))
 		{
 			std::cout << "Backing up files... ";
 			if (lava::backupFile(lava::brawl::kirbyhat::mainGCTFile, ".bak", 1) && lava::backupFile(lava::brawl::kirbyhat::boostGCTFile, ".bak", 1))
@@ -262,8 +279,104 @@ bool handleAutoGCTRMProcess(std::string khexASMOutputLocation)
 	return result;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+	if (argc > 1)
+	{
+		for (unsigned long i = 1; i < argc && i < argumentIDs::argumentCount; i++)
+		{
+			if (std::strcmp("-", argv[i]) != 0)
+			{
+				try
+				{
+					bool decisionVal = !(std::stoi(argv[i]) == 0);
+					switch (i)
+					{
+						case argumentIDs::aI_KBX:
+						{
+							KBXCopyOverride = decisionVal;
+							std::cout << "[C.ARG] Forcing KBX decision to: ";
+							break;
+						}
+						case argumentIDs::aI_REL:
+						{
+							RELCopyOverride = decisionVal;
+							std::cout << "[C.ARG] Forcing REL decision to: ";
+							break;
+						}
+						case argumentIDs::aI_ASM:
+						{
+							ASMCopyOverride = decisionVal;
+							std::cout << "[C.ARG] Forcing ASM decision to: ";
+							break;
+						}
+						case argumentIDs::aI_GCT:
+						{
+							GCTBuildOverride = decisionVal;
+							std::cout << "[C.ARG] Forcing GCT decision to: ";
+							break;
+						}
+						case argumentIDs::aI_CLOSE:
+						{
+							CloseOnFinishBypass = decisionVal;
+							std::cout << "[C.ARG] Bypass push button to close?: ";
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
+					if (decisionVal)
+					{
+						std::cout << "Yes\n";
+					}
+					else
+					{
+						std::cout << "No\n";
+					}
+				}
+				catch (std::exception e)
+				{
+					std::cerr << "[ERROR] Invalid argument value (\"" << argv[i] << "\") provided. ";
+					switch (i)
+					{
+						case argumentIDs::aI_KBX:
+						{
+							std::cerr << "KBX";
+							break;
+						}
+						case argumentIDs::aI_REL:
+						{
+							std::cerr << "REL";
+							break;
+						}
+						case argumentIDs::aI_ASM:
+						{
+							std::cerr << "ASM";
+							break;
+						}
+						case argumentIDs::aI_GCT:
+						{
+							std::cerr << "GCT";
+							break;
+						}
+						case argumentIDs::aI_CLOSE:
+						{
+							std::cerr << "Push button to close";
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
+					std::cerr << " argument not processed!\n";
+				}
+			}
+		}
+	}
+
 	std::ofstream* kHCS = &lava::brawl::kirbyhat::kirbyHatChangelogStream;
 	kHCS->open(lava::brawl::kirbyhat::changelogFilename, std::ios_base::out);
 	*kHCS << "lavaKirbyHatManager " << lava::brawl::kirbyhat::version << " Changelog\n";
@@ -357,7 +470,7 @@ int main()
 				relIn.fileBody.dumpToFile(lava::brawl::kirbyhat::relEditFilename);
 				if (lava::fileExists(lava::brawl::kirbyhat::relAutoplaceFilename))
 				{
-					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::relEditFilename, lava::brawl::kirbyhat::relAutoplaceFilename))
+					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::relEditFilename, lava::brawl::kirbyhat::relAutoplaceFilename, RELCopyOverride))
 					{
 						*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::relAutoplaceFilename << "\" and overwrote it with the newly edited REL.";
 					}
@@ -377,7 +490,7 @@ int main()
 				kbxFile.dumpToFile(lava::brawl::kirbyhat::kbxEditFilename);
 				if (lava::fileExists(lava::brawl::kirbyhat::kbxAutoplaceFilename))
 				{
-					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::kbxEditFilename, lava::brawl::kirbyhat::kbxAutoplaceFilename))
+					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::kbxEditFilename, lava::brawl::kirbyhat::kbxAutoplaceFilename, KBXCopyOverride))
 					{
 						*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::kbxAutoplaceFilename << "\" and overwrote it with the newly edited KBX.";
 					}
@@ -396,10 +509,10 @@ int main()
 				}
 				if (lava::fileExists(lava::brawl::kirbyhat::khexASMAutoplaceFilename))
 				{
-					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::khexASMEditFilename, lava::brawl::kirbyhat::khexASMAutoplaceFilename))
+					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::khexASMEditFilename, lava::brawl::kirbyhat::khexASMAutoplaceFilename, ASMCopyOverride))
 					{
 						*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::khexASMAutoplaceFilename << "\" and overwrote it with the newly edited ASM.\n";
-						handleAutoGCTRMProcess(lava::brawl::kirbyhat::khexASMEditFilename);
+						handleAutoGCTRMProcess(lava::brawl::kirbyhat::khexASMEditFilename, GCTBuildOverride);
 					}
 				}
 			}
@@ -423,6 +536,9 @@ int main()
 		std::cerr << "[ERROR] Output folder doesn't currently exist. Please check that a \"" << lava::brawl::kirbyhat::outputDirectory << "\" folder exists in the same directory as this program and try again.\n";
 	}
 	
-	std::cout << "\nPress any key to exit.\n";
-	_getch();
+	if (CloseOnFinishBypass == INT_MAX || CloseOnFinishBypass == 0)
+	{
+		std::cout << "\nPress any key to exit.\n";
+		_getch();
+	}
 }
