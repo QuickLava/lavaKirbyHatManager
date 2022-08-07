@@ -61,8 +61,6 @@ namespace lava
 		namespace kirbyhat
 		{
 			// AutoGCTRM Constants
-			// Un-comment the below line to switch the program to build Netplay GCT files.
-//#define DOLPHIN_BUILD
 			extern const std::string BuildFolder;
 			extern const std::string GCTRMExePath;
 			extern const std::string GCTRMCommandBase;
