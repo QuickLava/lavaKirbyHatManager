@@ -278,7 +278,7 @@ namespace lava
 			const std::string boostGCTTextFile = BuildFolder + boostGCTName + ".txt";
 
 			std::ofstream kirbyHatChangelogStream = std::ofstream();
-			const std::string version = "v0.8.0";
+			const std::string version = "v0.8.2";
 			const std::string inputFilename = "EX_KirbyHats.txt";
 			const std::string outputDirectory = "./EX_KirbyHats_Output/";
 			const std::string relAutoplaceFilename = BuildFolder + "pf/module/ft_kirby.rel";
