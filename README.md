@@ -8,9 +8,9 @@ Importantly, that means you'll still need to manually edit your characters' "Fig
 
 ## Instructions for Automatic File Placement and GCTRM
 
-1. Download the most recent release (Version 0.8.2, as of writing this).
+1. Download the most recent release.
 
-2. Extract the zipped folder into your build's base folder. For instance, P+EX builds would place it into the "Project+" folder, so that the program executables are located in "Project+/lavaKirbyHatManager - Version 0.8.2/".
+2. Extract the zipped folder into your build's base folder. For instance, P+EX builds would place it into the "Project+" folder (ie. such that the entire folder is where your "pf", "rp", and "Source" folders are).
 
 3. Copy your "KirbyHatEX.asm", "KirbyHat.kbx", and "ft_kirby.rel" files into the program's folder. Ideally, start from fresh, stock P+EX versions of these.
 
