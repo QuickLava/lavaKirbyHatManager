@@ -263,7 +263,7 @@ namespace lava
 		{
 			const std::string BuildFolder = ".././";
 			const std::string GCTRMExePath = BuildFolder + "GCTRealMate.exe";
-			const std::string GCTRMCommandBase = "\"" + GCTRMExePath + "\" -g -l ";
+			const std::string GCTRMCommandBase = "\"" + GCTRMExePath + "\" -g -l -q ";
 #define BUILD_NETPLAY_FILES
 #ifdef BUILD_NETPLAY_FILES
 			const std::string mainGCTName = "NETPLAY";
