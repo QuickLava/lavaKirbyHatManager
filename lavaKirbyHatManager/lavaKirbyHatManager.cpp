@@ -278,7 +278,7 @@ namespace lava
 			const std::string boostGCTTextFile = BuildFolder + boostGCTName + ".txt";
 
 			std::ofstream kirbyHatChangelogStream = std::ofstream();
-			const std::string version = "v0.8.3";
+			const std::string version = "v0.8.4";
 			const std::string inputFilename = "EX_KirbyHats.txt";
 			const std::string outputDirectory = "./EX_KirbyHats_Output/";
 			const std::string relAutoplaceFilename = BuildFolder + "pf/module/ft_kirby.rel";
@@ -365,7 +365,7 @@ namespace lava
 						if (hatSubactionVal1 || hatSubactionVal2 || hatSubactionVal3 || hatSubactionVal4)
 						{
 							// Certain character slots have entries with NULLED out hat data entries.
-							// It seems that this configuration causes Kirby not gain an ability on a copy attempt.
+							// It seems that this configuration causes Kirby not to gain an ability on a copy attempt.
 							// I'm hoping that this is a functionality that can be lent to P+Ex characters to prevent crashing on copy attempts.
 							// To facilitate this without bloating the hat summary, the only entry like this I'll be cataloguing is Kirby's
 							if (fighterID == lava::brawl::LAVA_CHARA_FIGHTER_IDS::LCFI_KIRBY || (hatSubactionVal3 != 0x00000330 && hatActionVal != 0xFFFFFFFF))
@@ -394,7 +394,6 @@ namespace lava
 				for (std::size_t i = 0; i < toAdd.size(); i++)
 				{
 					const std::pair<std::string, std::pair<std::size_t, std::size_t>>* currentHatPtr = &toAdd[i];
-					std::pair<std::size_t, std::string> newEntry = std::make_pair(currentHatPtr->second.first, currentHatPtr->first);
 					auto nameEmplaceRes = lava::brawl::kirbyhat::kirbyHatFIDToName.emplace(std::make_pair(currentHatPtr->second.first, currentHatPtr->first));
 					if (!nameEmplaceRes.second)
 					{
@@ -607,7 +606,7 @@ namespace lava
 				}
 				return result;
 			}
-			bool addHatsToKHEXAsm(std::string asmPathIn, std::string asmEditPathIn, const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd)
+			bool addHatsToKHEXAsm(std::string asmPathIn, std::string asmEditPathIn, const std::vector<std::pair<std::string, std::pair<std::size_t, std::size_t>>>& toAdd, bool disableNameComments)
 			{
 				bool result = 0;
 
@@ -635,7 +634,16 @@ namespace lava
 									sourceCharName = lava::brawl::kirbyhat::kirbyHatFIDToName.at(currEntryPtr->second.second);
 									asmOut << "\t%HatFloatFix(0x" << lava::numToHexStringWithPadding(currEntryPtr->second.first, 0x02) << ", 0x" <<
 										lava::numToHexStringWithPadding(currEntryPtr->second.second, 0x02) + ")";
-									asmOut << "\t#" << currEntryPtr->first << "/" << sourceCharName << "\n";
+									asmOut << "\t#";
+									if (!disableNameComments)
+									{
+										asmOut << currEntryPtr->first;
+									}
+									else
+									{
+										asmOut << "FID 0x" << lava::numToHexStringWithPadding(currEntryPtr->second.first, 0x02);
+									}
+									asmOut << "/" << sourceCharName << "\n";
 								}
 								result = 1;
 							}

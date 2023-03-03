@@ -7,6 +7,7 @@ int RELCopyOverride = INT_MAX;
 int ASMCopyOverride = INT_MAX;
 int GCTBuildOverride = INT_MAX;
 int CloseOnFinishBypass = INT_MAX;
+int DisableNamesInASM = INT_MAX;
 enum argumentIDs
 {
 	aI_KBX = 1,
@@ -14,6 +15,7 @@ enum argumentIDs
 	aI_ASM,
 	aI_GCT,
 	aI_CLOSE,
+	aI_ASM_NAMES,
 	argumentCount
 };
 
@@ -322,6 +324,12 @@ int main(int argc, char** argv)
 							std::cout << "[C.ARG] Bypass push button to close?: ";
 							break;
 						}
+						case argumentIDs::aI_ASM_NAMES:
+						{
+							DisableNamesInASM = decisionVal;
+							std::cout << "[C.ARG] Disable character names in ASM?: ";
+							break;
+						}
 						default:
 						{
 							break;
@@ -364,6 +372,11 @@ int main(int argc, char** argv)
 						case argumentIDs::aI_CLOSE:
 						{
 							std::cerr << "Push button to close";
+							break;
+						}
+						case argumentIDs::aI_ASM_NAMES:
+						{
+							std::cerr << "Disable ASM Names";
 							break;
 						}
 						default:
@@ -497,7 +510,7 @@ int main(int argc, char** argv)
 					std::cout << "\n";
 				}
 			}
-			if (lava::brawl::kirbyhat::addHatsToKHEXAsm(lava::brawl::kirbyhat::khexASMFilename, lava::brawl::kirbyhat::khexASMEditFilename, toAdd))
+			if (lava::brawl::kirbyhat::addHatsToKHEXAsm(lava::brawl::kirbyhat::khexASMFilename, lava::brawl::kirbyhat::khexASMEditFilename, toAdd, DisableNamesInASM == 1))
 			{
 				if (!toAdd.empty())
 				{
