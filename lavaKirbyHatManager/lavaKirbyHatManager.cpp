@@ -355,7 +355,7 @@ namespace lava
 					std::size_t hatSubactionVal2 = SIZE_MAX;
 					std::size_t hatSubactionVal3 = SIZE_MAX;
 					std::size_t hatSubactionVal4 = SIZE_MAX;
-					for (std::size_t fighterID = 0x00; fighterID < maxFighterID; fighterID++)
+					for (std::size_t fighterID = 0x00; fighterID <= maxFighterID; fighterID++)
 					{
 						hatActionVal = kbxIn.getLong(0x800 + (fighterID * 0x04));
 						hatSubactionVal1 = kbxIn.getLong((fighterID * 0x10));
@@ -398,7 +398,8 @@ namespace lava
 					if (!nameEmplaceRes.second)
 					{
 						std::cout << "[WARNING] Collision Occured on Fighter \"" << currentHatPtr->first << "\" (Fighter ID 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.first, 0x04) << "):\n";
-						std::cout << "\tNo hat will be added for this fighter.\n";
+						std::cout << "\tA hat listing for a fighter with this ID is already present in the provided KBX.\n"; 
+						std::cout << "\tIf this is unexpected, try using a clean P+Ex KBX file and try again. No hat will be added for this fighter.\n";
 						collidingIDs.push_back(i);
 					}
 				}
@@ -709,7 +710,7 @@ namespace lava
 						std::size_t hatSubactionVal4 = SIZE_MAX;
 						std::vector<std::size_t> noAbilityHats{};
 						bool newEntry = 0;
-						for (std::size_t fighterID = 0x00; fighterID < maxFighterID; fighterID++)
+						for (std::size_t fighterID = 0x00; fighterID <= maxFighterID; fighterID++)
 						{
 							newEntry = std::find(newIDs.begin(), newIDs.end(), fighterID) != newIDs.end();
 							hatActionVal = kbxIn.getLong(0x800 + (fighterID * 0x04));

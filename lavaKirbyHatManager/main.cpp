@@ -103,7 +103,7 @@ bool validateNewHatEntry(const std::pair<std::string, std::pair<std::size_t, std
 			else
 			{
 				errorMessage = "Specified Fighter ID is too high. Maximum valid value is 0x" + 
-					lava::numToHexStringWithPadding(lava::brawl::kirbyhat::maxFighterID, 0x04) + ".\n";
+					lava::numToHexStringWithPadding(lava::brawl::kirbyhat::maxFighterID, 0x02) + ".\n";
 			}
 		}
 		else
@@ -456,9 +456,8 @@ int main(int argc, char** argv)
 					}
 					else
 					{
-						*kHCS << "\t[ERROR] Skipping Character: Fighter ID collided with \"" <<
-							lava::brawl::kirbyhat::kirbyHatFIDToName.find(currentHatPtr->second.first)->second <<
-							"\" (ID 0x" << lava::numToHexStringWithPadding(currentHatPtr->second.first, 0x04) << ")\n";
+						*kHCS << "\t[WARNING] Provided KBX already contains a hat entry for a character with this ID.\n";
+						*kHCS << "\tIf this is unexpected, try using a clean P+Ex KBX file and try again. No hat will be added for this fighter.\n";
 					}
 				}
 
