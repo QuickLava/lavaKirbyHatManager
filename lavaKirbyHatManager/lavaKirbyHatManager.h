@@ -85,6 +85,7 @@ namespace lava
 			extern const std::string relAutoplaceFilename;
 			extern const std::string kbxAutoplaceFilename;
 			extern const std::string khexASMAutoplaceFilename;
+			extern const std::string khexASMAutoplaceFilename_Alt;
 			extern const std::string relFilename;
 			extern const std::string kbxFilename;
 			extern const std::string khexASMFilename;

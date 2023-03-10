@@ -519,11 +519,20 @@ int main(int argc, char** argv)
 				{
 					std::cout << "No hats were added to \"" << lava::brawl::kirbyhat::khexASMEditFilename << "\".\n";
 				}
+				
 				if (lava::fileExists(lava::brawl::kirbyhat::khexASMAutoplaceFilename))
 				{
 					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::khexASMEditFilename, lava::brawl::kirbyhat::khexASMAutoplaceFilename, ASMCopyOverride))
 					{
 						*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::khexASMAutoplaceFilename << "\" and overwrote it with the newly edited ASM.\n";
+						handleAutoGCTRMProcess(lava::brawl::kirbyhat::khexASMEditFilename, GCTBuildOverride);
+					}
+				}
+				else if (lava::fileExists(lava::brawl::kirbyhat::khexASMAutoplaceFilename_Alt))
+				{
+					if (offerCopyOverAndBackup(lava::brawl::kirbyhat::khexASMEditFilename, lava::brawl::kirbyhat::khexASMAutoplaceFilename_Alt, ASMCopyOverride))
+					{
+						*kHCS << "\nNote: Backed up \"" << lava::brawl::kirbyhat::khexASMAutoplaceFilename_Alt << "\" and overwrote it with the newly edited ASM.\n";
 						handleAutoGCTRMProcess(lava::brawl::kirbyhat::khexASMEditFilename, GCTBuildOverride);
 					}
 				}

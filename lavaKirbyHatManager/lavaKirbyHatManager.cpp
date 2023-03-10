@@ -278,12 +278,13 @@ namespace lava
 			const std::string boostGCTTextFile = BuildFolder + boostGCTName + ".txt";
 
 			std::ofstream kirbyHatChangelogStream = std::ofstream();
-			const std::string version = "v0.8.4";
+			const std::string version = "v0.8.5";
 			const std::string inputFilename = "EX_KirbyHats.txt";
 			const std::string outputDirectory = "./EX_KirbyHats_Output/";
 			const std::string relAutoplaceFilename = BuildFolder + "pf/module/ft_kirby.rel";
 			const std::string kbxAutoplaceFilename = BuildFolder + "pf/BrawlEx/KirbyHat.kbx";
 			const std::string khexASMAutoplaceFilename = BuildFolder + "Source/Extras/KirbyHatEX.asm";
+			const std::string khexASMAutoplaceFilename_Alt = BuildFolder + "Source/P+Ex/KirbyHatEX.asm";
 			const std::string changelogFilename = outputDirectory + "EX_KirbyHats_Changelog.txt";
 #ifdef USE_EX_PREFIX_FOR_INPUT
 			const std::string relFilename = "EX_ft_kirby.rel";
